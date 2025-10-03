@@ -11,10 +11,30 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.IO
+// ✅ Allow multiple frontend origins
+const allowedOrigins = [
+  "https://chat-app-psi-nine-96.vercel.app",
+  "https://chat-pbfi0o9ja-maheshs-projects-563ecfbf.vercel.app"
+];
+
+// ✅ CORS for HTTP requests
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+app.use(express.json({ limit: "4mb" }));
+
+// ✅ Initialize Socket.IO with CORS
 export const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "*",
+    origin: allowedOrigins,
     credentials: true,
   },
 });
@@ -79,14 +99,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Middleware
-app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
-  credentials: true
-}));
-app.use(express.json({ limit: "4mb" }));
-
-// Routes
+// ✅ Routes
 app.get("/", (req, res) => {
   res.send("✅ API is running...");
 });
@@ -105,5 +118,5 @@ const startServer = async () => {
 
 startServer();
 
-// ✅ Export for Vercel
+// ✅ Export for Vercel compatibility
 export default server;
