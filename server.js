@@ -13,20 +13,21 @@ const server = http.createServer(app);
 
 // ✅ Allow multiple frontend origins
 const allowedOrigins = [
-  "https://chat-app-psi-nine-96.vercel.app",
-  "https://chat-pbfi0o9ja-maheshs-projects-563ecfbf.vercel.app"
+  "https://chat-app-maheshs-projects-563ecfbf.vercel.app",
+  "https://chat-app-psi-nine-96.vercel.app"
 ];
 
-// ✅ CORS for HTTP requests
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json({ limit: "4mb" }));
